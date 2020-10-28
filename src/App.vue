@@ -23,11 +23,17 @@
           v-model="group"
           active-class="deep-purple--text text--accent-4"
         >
-          <v-list-item @click="routerLink('Purchase')">
+          <!-- <v-list-item @click="routerLink('Purchase')">
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Purchase</v-list-item-title>
+          </v-list-item> -->
+          <v-list-item @click="routerLink('Picture')">
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Picture</v-list-item-title>
           </v-list-item>
 
           <v-list-item @click="routerLink('Divination')">
@@ -35,13 +41,6 @@
               <v-icon>mdi-account</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Divination</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item @click="routerLink('Picture')">
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Picture</v-list-item-title>
           </v-list-item>
 
         </v-list-item-group>

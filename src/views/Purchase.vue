@@ -45,7 +45,7 @@ export default Vue.extend({
   },
   methods: {
     purchaseCoin() {
-      (window as any).webkit.messageHandlers.purchase.postMessage(`${this.buyNumber}`)
+      (window as any).webkit.messageHandlers.purchase.postMessage(`com.queueinc.rhyme.100coin,${this.buyNumber}`)
     },
     fetchRestore() {
       const response = (window as any).webkit.messageHandlers.restore.postMessage(`${this.buyNumber}`)

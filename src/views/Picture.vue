@@ -15,7 +15,7 @@
         <v-row class="px-8">
           <v-btn text @click="buyDialog = false">キャンセル</v-btn>
           <v-spacer></v-spacer>
-          <v-btn @click="buyPhoto" depressed color="primary">購入</v-btn>
+          <v-btn @click="buyPhoto" :loading="btnLoading" depressed color="primary">購入</v-btn>
         </v-row>
       </v-card-actions>
     </v-card>
@@ -24,7 +24,36 @@
   <!-- main contents -->
   <v-container fluid class="px-12">
     <h3>Generated Pictures</h3>
-    <v-row>
+    <div class="d-flex flex-wrap">
+      <div
+        style="width: 33%; margin-right: .3%; margin-bottom: .3%"
+        v-for="item in 40"
+        :key="item"
+      >
+        <div v-if="isPurchased(item)">
+          <img
+            style="width: 100%"
+            class="d-block"
+            :src="require(`@/assets/${item}.jpg`)"
+          />
+        </div>
+        <v-img
+          v-else
+          :src="require(`@/assets/${item}.jpg`)"
+        >
+          <v-overlay absolute opacity="0.9">
+            <v-btn text @click="clickPhoto(item)">
+              <v-icon
+                light
+              >mdi-lock
+              </v-icon>
+              {{ price }}
+            </v-btn>
+          </v-overlay>
+        </v-img>
+      </div>
+    </div>
+    <!-- <v-row>
       <v-col
         v-for="item in 40"
         :key="item"
@@ -34,10 +63,16 @@
         lg="2"
         xl="2"
       >
+        <img
+          v-if="isPurchased(item)"
+          class="d-block"
+          :src="require(`@/assets/${item}.jpg`)"
+        />
         <v-img
+          v-else
           :src="require(`@/assets/${item}.jpg`)"
         >
-          <v-overlay v-if="!isPurchased(item)" absolute opacity="0.9">
+          <v-overlay absolute opacity="0.9">
             <v-btn text @click="clickPhoto(item)">
               <v-icon
                 light
@@ -48,7 +83,7 @@
           </v-overlay>
         </v-img>
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </div>
 </template>
@@ -61,10 +96,11 @@ export default Vue.extend({
 
   data() {
     return {
-      price: 50,
+      price: 100,
       buyDialog: false,
       purchasedImages: [] as number[],
       selectedImageNo: 0,
+      btnLoading: false
     }
   },
 
@@ -74,6 +110,16 @@ export default Vue.extend({
     if (list !== null) {
       this.purchasedImages = JSON.parse(list);
     }
+    (window as any).paymentComplete = (isComplete: boolean) => {
+      // 処理
+      if (isComplete) {
+        this.purchasedImages.push(this.selectedImageNo)
+        console.log(this.purchasedImages)
+        localStorage.setItem('purchasedImages', JSON.stringify(this.purchasedImages));
+      }
+      this.buyDialog = false;
+      this.btnLoading = false
+    };
   },
 
   methods: {
@@ -82,13 +128,9 @@ export default Vue.extend({
       this.buyDialog = true;
     },
     buyPhoto() {
-      this.purchasedImages.push(this.selectedImageNo)
-      console.log(this.purchasedImages)
-
       // Todo: 課金処理
-
-      localStorage.setItem('purchasedImages', JSON.stringify(this.purchasedImages));
-      this.buyDialog = false;
+      (window as any).webkit.messageHandlers.purchase.postMessage(`com.queueinc.rhyme.100coin,1`)
+      this.btnLoading = true
     },
     isPurchased(num: number): boolean {
       console.log(this.purchasedImages.indexOf(num-1))

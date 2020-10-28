@@ -1,6 +1,7 @@
 <template>
   <div class="pa-3">
     <h3>Divination</h3>
+    <h5>Price: $1.00</h5>
     <div class="mb-5" v-if="result">
       <h2
         style="font-size: 60px;"
@@ -10,15 +11,30 @@
       <h3 class="mb-2">Health luck <v-icon v-for="i in healthLuck" :key="i">mdi-star</v-icon></h3>
       <h3 class="mb-2">Love luck <v-icon v-for="i in loveLuck" :key="i">mdi-star</v-icon></h3>
       <h3 class="mb-2">Career luck <v-icon v-for="i in careerLuck" :key="i">mdi-star</v-icon></h3>
-      <h3 class="mb-2">Lucky color is 
+      <h3 class="mb-2">Lucky color is
         <span :class="`${luckyColor}--text`">{{ luckyColor }}.</span>
       </h3>
       <h3>Lucky number is {{ luckyNumber }}.</h3>
     </div>
     <v-btn
+      @click="sendPurchase"
+      block
+      class="mt-10"
+      :disabled="isPurchased"
+      color="primary"
+    >Purchase Divination</v-btn>
+    <p>{{hoge}}</p>
+    <!-- <v-btn
+      @click="sendRestore"
+      block
+      class="mt-10"
+      color="primary"
+    >Restore</v-btn> -->
+    <v-btn
       @click="getDivinationResult"
       block
       class="mt-10"
+      :disabled="!isPurchased"
       color="primary"
     >Draw</v-btn>
   </div>
@@ -33,6 +49,8 @@ type DataType = {
   healthLuck: number;
   loveLuck: number;
   careerLuck: number;
+  isPurchased: boolean;
+  hoge: string;
 };
 
 interface DivinationEntity {
@@ -53,6 +71,8 @@ export default Vue.extend({
       healthLuck: 0,
       loveLuck: 0,
       careerLuck: 0,
+      isPurchased: false,
+      hoge: ''
     };
   },
 
@@ -108,7 +128,20 @@ export default Vue.extend({
     },
   },
 
+  mounted() {
+    (window as any).webkit.messageHandlers.restore.postMessage("");
+    (window as any).restoreComplete = (isComplete: boolean) => {
+      this.isPurchased = isComplete
+    };
+    (window as any).paymentComplete = (isComplete: boolean) => {
+      this.isPurchased = isComplete
+    };
+  },
+
   methods: {
+    sendPurchase() {
+      (window as any).webkit.messageHandlers.purchase.postMessage("com.queueinc.rhyme.divine,1");
+    },
     getDivinationResult(): void {
       const index = Math.round(Math.random() * (this.devinationChoices.length - 1));
       this.result = this.devinationChoices[index];
